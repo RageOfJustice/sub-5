@@ -1,0 +1,78 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/63dbd4a3-d858-4deb-9703-51c33b1e940d # 
+title: Managers may accept or cancel orders, assign orders to workers.
+version: v1.0
+
+protocols: HTTP
+
+types: 
+  order:
+    properties:
+      identifier: string
+      description?: string
+      price: number
+      status: number
+  orders:
+    properties: 
+      orders: order[]
+  log:
+    properties:
+      action: string
+      orderId: string
+      date: number
+
+
+/orders:
+  get:
+    responses: 
+      200:
+        body:
+          application/json:
+            type: orders
+            example: { "orders": [{"identifier": "1234", "description": "Hero guitar", "price": 400, "status": 3}] }
+      404:
+          body: 
+            application/json:
+              properties:
+                message: string
+              example: |
+                {
+                  "message" : "Orders not found"
+                }
+
+  /{orderId}:
+    uriParameters: 
+        orderId: string
+    get:
+      responses: 
+          200:
+            body: 
+              application/json:
+                type: order
+                example: {"identifier": "1234", "description": "Hero guitar", "price": 400,"status": 3}
+    /accept:
+      get:
+        responses: 
+          200:
+            body: 
+              application/json:
+                properties: 
+                  result: boolean
+                example: {"result": true}
+    /decline:
+      get:
+        responses: 
+          200:
+            body: 
+              application/json:
+                properties: 
+                  result: boolean
+                example: {"result": true}
+/last-action:
+  get:
+    responses: 
+      200:
+        body: 
+          application/json:
+            type: log
+            example: {"orderId": "1234", "action": "accept", "date": "123124555"}
